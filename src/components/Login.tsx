@@ -95,17 +95,19 @@ export default function Login() {
           <div style={{ color: 'red' }}>
             <p className="mt-2 text-center text-sm text-red-600">{error}</p>
           </div>
-        )}
+        )}        
         <div className="text-center">
-          <button
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setError('');
-            }}
-            className="font-medium text-green-600 hover:text-green-500"
-          >
-            {isLogin ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
-          </button>
+          <p className="text-center mt-2">
+            Need an account?{' '}
+            <button
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError('');navigate('/signup')}}
+              className="font-medium text-green-600 hover:text-green-500"
+            >
+              Sign up here
+            </button>
+          </p>
         </div>
       </div>
     </div>
