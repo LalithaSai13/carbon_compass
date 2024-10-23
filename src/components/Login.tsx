@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { auth } from '../firebase';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Leaf } from 'lucide-react';
 
@@ -29,7 +28,6 @@ export default function Login() {
       console.error(error);
       setLoading(false); // Stop loading
       if (isLogin) {
-        // User not found or incorrect credentials
         setError('Failed to log in. Please check your credentials or sign up.');
       } else {
         setError('Failed to create an account. Please try again.');
@@ -43,9 +41,7 @@ export default function Login() {
         <div>
           <Leaf className="mx-auto h-12 w-auto text-green-500" />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isLogin
-              ? 'Sign in to Carbon Compass'
-              : 'Sign up for Carbon Compass'}
+            {isLogin ? 'Sign in to Carbon Compass' : 'Sign up for Carbon Compass'}
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -91,24 +87,13 @@ export default function Login() {
               disabled={loading} // Disable button while loading
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
-              {loading ? 'Loading...' : isLogin ? 'Sign in' : 'Sign up'}
+              {loading ? 'Loading...' : (isLogin ? 'Sign in' : 'Sign up')}
             </button>
           </div>
         </form>
         {error && (
           <div style={{ color: 'red' }}>
             <p className="mt-2 text-center text-sm text-red-600">{error}</p>
-            {isLogin && (
-              <p className="text-center mt-2">
-                Don't have an account?{' '}
-                <button
-                  onClick={() => navigate('/signup')}
-                  className="font-medium text-green-600 hover:text-green-500"
-                >
-                  Sign up here
-                </button>
-              </p>
-            )}
           </div>
         )}
         <div className="text-center">
@@ -119,9 +104,7 @@ export default function Login() {
             }}
             className="font-medium text-green-600 hover:text-green-500"
           >
-            {isLogin
-              ? 'Need an account? Sign up'
-              : 'Already have an account? Sign in'}
+            {isLogin ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
           </button>
         </div>
       </div>

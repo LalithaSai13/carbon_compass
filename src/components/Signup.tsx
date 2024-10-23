@@ -1,25 +1,32 @@
 import React, { useState } from 'react';
 import { Leaf } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(''); // For displaying errors
+  const [loading, setLoading] = useState(false); // Loading state
   const { signup } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(''); // Clear any previous error message
+    setLoading(true); // Start loading
     try {
       await signup(email, password);
       alert('Signup successful!');
-      navigate('/dashboard'); // Navigate to dashboard on successful signup
+      navigate('/dashboard'); // Navigate to dashboard after successful signup
     } catch (error: any) {
-      console.error(error);
-      setError('Sign-up failed. Already have an account?'); // Show error message
+      setLoading(false); // Stop loading
+      // Check for specific error codes (assuming you're using Firebase)
+      if (error.code === 'auth/email-already-in-use') {
+        setError('An account with this email already exists. Please log in.');
+      } else {
+        setError('Sign-up failed. Please try again.');
+      }
     }
   };
 
@@ -72,35 +79,28 @@ const Signup = () => {
           <div>
             <button
               type="submit"
+              disabled={loading} // Disable button while loading
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
-              Sign up
+              {loading ? 'Loading...' : 'Sign up'}
             </button>
           </div>
         </form>
         {error && (
           <div style={{ color: 'red' }}>
-            <p className="mt-2 text-center text-sm text-red-600">
-              {error}{' '}
-              <Link
-                to="/login"
-                className="font-medium text-green-600 hover:text-green-500"
-              >
-                Log in here
-              </Link>
-            </p>
+            <p className="mt-2 text-center text-sm text-red-600">{error}</p>
           </div>
         )}
         <div className="text-center">
-          <button
-            onClick={() => {
-              setError('');
-              navigate('/login'); // Navigate to login page
-            }}
-            className="font-medium text-green-600 hover:text-green-500"
-          >
-            Already have an account? Sign in
-          </button>
+          <p className="text-center mt-2">
+            Already have an account?{' '}
+            <button
+              onClick={() => navigate('/login')}
+              className="font-medium text-green-600 hover:text-green-500"
+            >
+              Log in here
+            </button>
+          </p>
         </div>
       </div>
     </div>
