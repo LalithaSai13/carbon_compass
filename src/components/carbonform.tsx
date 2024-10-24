@@ -4,15 +4,30 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { auth, firestore } from '../firebase'; // Ensure this file exports both auth and firestore instances
 import { doc, setDoc, arrayUnion } from 'firebase/firestore';
 
+type FuelType = 'petrol' | 'diesel' | 'electric' | 'naturalGas';
+
+interface FormData {
+    businessName: string;
+    address: string;
+    industryType: string;
+    energyConsumption: string;
+    renewableEnergyUsage: string;
+    distanceTraveled: string;
+    fuelType: FuelType; // Use the FuelType union
+    fuelConsumption: string;
+    totalWasteProduced: string;
+    wasteRecycled: string;
+}
+
 const CarbonForm: React.FC = () => {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<FormData>({
         businessName: '',
         address: '',
         industryType: '',
         energyConsumption: '',
         renewableEnergyUsage: '',
         distanceTraveled: '',
-        fuelType: '',
+        fuelType: 'petrol', // Default value
         fuelConsumption: '',
         totalWasteProduced: '',
         wasteRecycled: '',

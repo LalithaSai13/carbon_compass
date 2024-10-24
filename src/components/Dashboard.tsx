@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Calculator, Trophy, Lightbulb, LogOut, BookText } from 'lucide-react';
+import { Compass, Trophy, Lightbulb, LogOut, BookText } from 'lucide-react';
 
 export default function Dashboard() {
   const { currentUser, logout } = useAuth();
@@ -20,10 +20,10 @@ export default function Dashboard() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Link to="/calculator" className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center transition duration-300 ease-in-out transform hover:scale-105">
-            <Calculator size={48} className="text-green-500 mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Carbon Calculator</h2>
-            <p className="text-gray-600 text-center">Estimate your carbon footprint and get personalized insights</p>
+          <Link to="/carboncompass" className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center transition duration-300 ease-in-out transform hover:scale-105">
+            <Compass size={48} className="text-green-500 mb-4" />
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Carbon Blog</h2>
+            <p className="text-gray-600 text-center">Navigate Your Carbon Footprint: Discover, Reduce, and Sustain</p>
           </Link>
           
           <Link to="/carbonform" className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center transition duration-300 ease-in-out transform hover:scale-105">

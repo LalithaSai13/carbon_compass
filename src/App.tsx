@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
-import CarbonCalculator from './components/CarbonCalculator';
+import CarbonCompass from './components/CarbonCalculator';
 import Leaderboard from './components/Leaderboard';
 import Insights from './components/Insights';
 import PrivateRoute from './components/PrivateRoute';
@@ -34,10 +34,10 @@ function App() {
                 }
               />
               <Route
-                path="/calculator"
+                path="/carboncompass"
                 element={
                   <PrivateRoute>
-                    <CarbonCalculator />
+                    <CarbonCompass />
                   </PrivateRoute>
                 }
               />

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Home, Lightbulb, Calculator, BookText, Trophy, LogOut, Leaf } from 'lucide-react';
+import { Home, Lightbulb, Compass, BookText, Trophy, LogOut, Leaf } from 'lucide-react';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -40,9 +40,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                         </Link>
                     </li>
                     <li>
-                        <Link to="/calculator" className="flex items-center p-2 text-white hover:bg-gray-700">
-                            <Calculator className="mr-2" />
-                            {isOpen && 'Calculator'}
+                        <Link to="/carboncompass" className="flex items-center p-2 text-white hover:bg-gray-700">
+                            <Compass className="mr-2" />
+                            {isOpen && 'Carbon Compass'}
                         </Link>
                     </li>
                     <li>
