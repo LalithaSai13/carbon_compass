@@ -34,12 +34,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                         </Link>
                     </li>
                     <li>
-                        <Link to="/insights" className="flex items-center p-2 text-white hover:bg-[#4AA79C] transition duration-200">
-                            <Lightbulb className="mr-2 text-white" />
-                            {isOpen && 'Insights'}
-                        </Link>
-                    </li>
-                    <li>
                         <Link to="/carboncompass" className="flex items-center p-2 text-white hover:bg-[#4AA79C] transition duration-200">
                             <Compass className="mr-2 text-white" />
                             {isOpen && 'Carbon Compass'}
@@ -51,6 +45,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                             {isOpen && 'Carbon Form'}
                         </Link>
                     </li>
+                    <li>
+                        <Link to="/insights" className="flex items-center p-2 text-white hover:bg-[#4AA79C] transition duration-200">
+                            <Lightbulb className="mr-2 text-white" />
+                            {isOpen && 'Insights'}
+                        </Link>
+                    </li>
+                    
+                    
                     <li>
                         <Link to="/leaderboard" className="flex items-center p-2 text-white hover:bg-[#4AA79C] transition duration-200">
                             <Trophy className="mr-2 text-white" />

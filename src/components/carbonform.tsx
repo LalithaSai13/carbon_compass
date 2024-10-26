@@ -214,8 +214,7 @@ const CarbonForm: React.FC = () => {
     };
 
     return (
-        <div className="flex justify-center items-start min-h-screen bg-gradient-to-r from-green-400 to-blue-500 p-4">
-            {showConfetti && <Confetti />}
+<div className="p-5 min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">            {showConfetti && <Confetti />}
             <div className="flex flex-col bg-white p-8 rounded-lg shadow-lg w-full max-w-xl mr-4">
                 <h1 className="text-2xl font-bold mb-6 text-gray-800">Carbon Footprint Calculator</h1>
                 <form onSubmit={handleSubmit}>
@@ -340,22 +339,27 @@ const CarbonForm: React.FC = () => {
 const RewardCard: React.FC<{ points: number }> = ({ points }) => {
     return (
         <motion.div
-            className="flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-lg w-full max-w-sm mx-auto mt-4 relative"
+            className="fixed flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-lg w-full max-w-sm mx-auto mt-4 z-50"
+            style={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
+            exit={{ opacity: 0 }}
         >
             <motion.div
                 className="w-0 h-0 border-l-24 border-l-transparent border-r-24 border-r-transparent border-b-24 border-b-green-500 mb-2"
                 animate={{
+
                     height: [0, 40, 0],
                     opacity: [0, 1, 0],
                 }}
-                transition={{ duration: 1, repeat: Infinity }}
+                transition={{ duration: 4, repeat: Infinity }}
             />
             <p className="text-lg font-bold">🎉 You've earned {points} reward points! 🎉</p>
         </motion.div>
     );
 };
 
+
 export default CarbonForm;
+
