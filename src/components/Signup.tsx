@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Leaf } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { FirebaseError } from 'firebase/app';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -19,13 +20,18 @@ const Signup = () => {
       await signup(email, password);
       alert('Signup successful!');
       navigate('/dashboard'); // Navigate to dashboard after successful signup
-    } catch (error: any) {
+    } catch (error) {
       setLoading(false); // Stop loading
-      // Check for specific error codes (assuming you're using Firebase)
-      if (error.code === 'auth/email-already-in-use') {
-        setError('An account with this email already exists. Please log in.');
+      
+      if (error instanceof FirebaseError) {
+        // Check for specific error codes (assuming you're using Firebase)
+        if (error.code === 'auth/email-already-in-use') {
+          setError('An account with this email already exists. Please log in.');
+        } else {
+          setError('Sign-up failed. Please try again.');
+        }
       } else {
-        setError('Sign-up failed. Please try again.');
+        setError('An unexpected error occurred. Please try again.');
       }
     }
   };

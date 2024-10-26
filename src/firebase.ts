@@ -3,13 +3,12 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBqKmPmdGcgdpK3gIGTewx2LBidJKx1EtU',
-  authDomain: 'carbon-compass-df0ef.firebaseapp.com',
-  projectId: 'carbon-compass-df0ef',
-  storageBucket: 'carbon-compass-df0ef.appspot.com',
-  messagingSenderId: '215825993019',
-  appId: '1:215825993019:web:eeb80e7c8d84858279fb1e',
-  measurementId: 'G-6FQ3T1FSQV',
+    apiKey: "AIzaSyAiCqfvyGiPVR6O8dloPqoBvsTjJftBZLU",
+    authDomain: "carbon-compass-c87a2.firebaseapp.com",
+    projectId: "carbon-compass-c87a2",
+    storageBucket: "carbon-compass-c87a2.appspot.com",
+    messagingSenderId: "824193370480",
+    appId: "1:824193370480:web:4f342849506b61fb20a7b5"
 };
 
 const app = initializeApp(firebaseConfig);
