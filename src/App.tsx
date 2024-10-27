@@ -1,4 +1,4 @@
-// App.tsx 
+// App.tsx
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
@@ -9,10 +9,10 @@ import Leaderboard from './components/Leaderboard';
 import Insights from './components/Insights';
 import PrivateRoute from './components/PrivateRoute';
 import Signup from './components/Signup';
-import CarbonForm from './components/carbonform'; // Ensure correct casing
-import Sidebar from './components/siderbar'; // Ensure correct casing
-import GoalTracker from './components/goaltracker'; // Ensure correct casing
-// import UserSubmissions from './components/UserSubmissions'; // Uncomment if needed
+import CarbonForm from './components/carbonform';
+import Sidebar from './components/siderbar';
+import GoalTracker from './components/goaltracker';
+//import UserSubmissions from './components/UserSubmissions';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -75,15 +75,6 @@ function App() {
                   </PrivateRoute>
                 }
               />
-              {/* Uncomment if needed */}
-              {/* <Route
-                path="/user-submissions"
-                element={
-                  <PrivateRoute>
-                    <UserSubmissions />
-                  </PrivateRoute>
-                }
-              /> */}
             </Routes>
           </div>
         </div>

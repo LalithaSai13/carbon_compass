@@ -11,11 +11,9 @@ const GoalTracker: React.FC = () => {
   const [progress, setProgress] = useState<number>(0);
   const [lastStrategy, setLastStrategy] = useState<string | null>(null);
   const [newGoal, setNewGoal] = useState<number>(100);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchRewardsAndStrategy = async () => {
-      setLoading(true);
       try {
         const user = auth.currentUser;
         if (user && user.email) {
@@ -25,48 +23,36 @@ const GoalTracker: React.FC = () => {
 
           if (docSnap.exists()) {
             const data = docSnap.data();
-            const rewardsValue = data?.reward || 0;
+            const rewardsValue = data.rewardPoints || 0; // Use 0 as fallback
+            const submissions = data.submissions || [];
+
             setRewards(rewardsValue);
-
-            const submissions = data?.submissions || [];
-            if (submissions.length > 0) {
-              const lastSubmission = submissions[submissions.length - 1];
-              setLastStrategy(lastSubmission?.strategy || null);
+            setLastStrategy(submissions.length > 0 ? submissions[submissions.length - 1].strategy || null : null);
+            
+            if (goal > 0) {
+              const calculatedProgress = (rewardsValue / goal) * 100;
+              setProgress(calculatedProgress);
             } else {
-              setLastStrategy(null);
+              setProgress(0);
             }
-
-            const calculatedProgress = goal > 0 ? (rewardsValue / goal) * 100 : 0;
-            setProgress(calculatedProgress);
           } else {
-            console.log('Document does not exist');
+            console.error("No document found for the user.");
           }
         }
       } catch (error) {
-        console.error('Error fetching credits data:', error);
-      } finally {
-        setLoading(false);
+        console.error('Error fetching rewards data:', error);
       }
     };
 
     fetchRewardsAndStrategy();
-  }, [goal]); // Removed `reward` from dependencies
+  }, [goal]);
 
   const handleGoalChange = () => {
     setGoal(newGoal);
   };
 
-  const handleGoalInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setNewGoal(value ? Number(value) : 0); // Handle empty input case
-  };
-
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
-
   return (
-    <div className="p-5 min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+    <div className="flex flex-col items-center mt-12">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-6xl w-full">
         <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">Credit Points Goal Tracker</h1>
         
@@ -94,7 +80,7 @@ const GoalTracker: React.FC = () => {
             type="number"
             min="1"
             value={newGoal}
-            onChange={handleGoalInputChange}
+            onChange={(e) => setNewGoal(Number(e.target.value))}
             className="w-24 p-2 border border-gray-300 rounded-lg mr-2 text-center focus:outline-none focus:ring focus:ring-blue-300"
             placeholder="Set Goal"
           />

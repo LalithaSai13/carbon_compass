@@ -1,38 +1,9 @@
-import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Compass, Trophy, Lightbulb, LogOut, BookText, Flame, CheckCircle } from 'lucide-react';
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore"; 
+import { Compass, Trophy, Lightbulb, LogOut, BookText, Target } from 'lucide-react';
 
 export default function Dashboard() {
   const { currentUser, logout } = useAuth();
-  const [totalEmissions, setTotalEmissions] = useState(0);
-  const [rewardPoints, setRewardPoints] = useState(0);
-  const db = getFirestore();
-
-  useEffect(() => {
-    if (currentUser) {
-      const fetchData = async () => {
-        try {
-          const userDoc = doc(db, "users", currentUser.uid);
-          const docSnapshot = await getDoc(userDoc);
-
-          if (docSnapshot.exists()) {
-            // Set existing data if available
-            const data = docSnapshot.data();
-            setTotalEmissions(data.totalEmissions || 0);
-            setRewardPoints(data.rewardPoints || 0);
-          } else {
-            // Initialize data to zero if it’s the user’s first login
-            await setDoc(userDoc, { totalEmissions: 0, rewardPoints: 0 });
-          }
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
-      };
-      fetchData();
-    }
-  }, [currentUser, db]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0f0f0] to-[#e8e8e8] py-12 px-4 sm:px-6 lg:px-8">
@@ -46,17 +17,25 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Carbon Form Card */}
+        <Link to="/carbonform" className="bg-white rounded-lg shadow-lg hover:shadow-xl p-6 flex flex-col items-center transition duration-300 ease-in-out transform hover:scale-105 mb-8">
+          <BookText size={48} className="text-[#4AA79C] mb-4" />
+          <h2 className="text-2xl font-semibold text-[#333] mb-2">Carbon Form</h2>
+          <p className="text-gray-600 text-center">Submit/log your carbon footprint</p>
+        </Link>
+
+        {/* Carbon Blog, Insights, and Leaderboard Cards Side by Side */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <Link to="/carboncompass" className="bg-white rounded-lg shadow-lg hover:shadow-xl p-6 flex flex-col items-center transition duration-300 ease-in-out transform hover:scale-105">
             <Compass size={48} className="text-[#4AA79C] mb-4" />
             <h2 className="text-2xl font-semibold text-[#333] mb-2">Carbon Blog</h2>
             <p className="text-gray-600 text-center">Navigate Your Carbon Footprint: Discover, Reduce, and Sustain</p>
           </Link>
-
-          <Link to="/carbonform" className="bg-white rounded-lg shadow-lg hover:shadow-xl p-6 flex flex-col items-center transition duration-300 ease-in-out transform hover:scale-105">
-            <BookText size={48} className="text-[#4AA79C] mb-4" />
-            <h2 className="text-2xl font-semibold text-[#333] mb-2">Carbon Form</h2>
-            <p className="text-gray-600 text-center">Submit/log your carbon footprint</p>
+          
+          <Link to="/insights" className="bg-white rounded-lg shadow-lg hover:shadow-xl p-6 flex flex-col items-center transition duration-300 ease-in-out transform hover:scale-105">
+            <Lightbulb size={48} className="text-[#4AA79C] mb-4" />
+            <h2 className="text-2xl font-semibold text-[#333] mb-2">Insights</h2>
+            <p className="text-gray-600 text-center">View your personalized eco-friendly recommendations</p>
           </Link>
 
           <Link to="/leaderboard" className="bg-white rounded-lg shadow-lg hover:shadow-xl p-6 flex flex-col items-center transition duration-300 ease-in-out transform hover:scale-105">
@@ -64,28 +43,16 @@ export default function Dashboard() {
             <h2 className="text-2xl font-semibold text-[#333] mb-2">Leaderboard</h2>
             <p className="text-gray-600 text-center">See how you rank among other eco-warriors</p>
           </Link>
-
-          <Link to="/insights" className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center transition duration-300 ease-in-out transform hover:scale-105">
-            <Lightbulb size={48} className="text-blue-500 mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Insights</h2>
-            <p className="text-gray-600 text-center">View and track your personalized eco-friendly insights</p>
-          </Link>
         </div>
 
-        <div className="mt-12 text-center">
-          <div className="flex justify-center space-x-8 mb-4">
-            <div className="flex flex-col items-center">
-              <Flame size={48} className="text-[#FF4500] mb-2" />
-              <p className="text-xl font-semibold text-[#333]">{totalEmissions} kg CO₂</p>
-              <p className="text-gray-600">Total Emissions</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <CheckCircle size={48} className="text-[#4AA79C] mb-2" />
-              <p className="text-xl font-semibold text-[#333]">{rewardPoints} pts</p>
-              <p className="text-gray-600">Reward Points</p>
-            </div>
-          </div>
+        {/* Goals Card Below Other Cards */}
+        <Link to="/goaltracker" className="bg-white rounded-lg shadow-lg hover:shadow-xl p-6 flex flex-col items-center transition duration-300 ease-in-out transform hover:scale-105">
+          <Target size={48} className="text-[#4AA79C] mb-4" />
+          <h2 className="text-2xl font-semibold text-[#333] mb-2">Goals</h2>
+          <p className="text-gray-600 text-center">View your personalized eco-friendly recommendations</p>
+        </Link>
 
+        <div className="mt-12 text-center">
           {currentUser ? (
             <>
               <p className="text-[#333] mb-4">Logged in as: {currentUser.email}</p>

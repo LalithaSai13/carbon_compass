@@ -47,6 +47,7 @@ const CarbonForm: React.FC = () => {
     const [previousEmissions, setPreviousEmissions] = useState<number | null>(null);
     const [showConfetti, setShowConfetti] = useState<boolean>(false);
     const [rewardMessage, setRewardMessage] = useState<string>('');
+    const [showRewardPopup, setShowRewardPopup] = useState<boolean>(false);
 
     const handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement> = (e) => {
         const { name, value } = e.target;
@@ -61,7 +62,6 @@ const CarbonForm: React.FC = () => {
             tempErrors.name = 'Name is required.';
             isValid = false;
         }
-
         if (!formData.location) {
             tempErrors.location = 'Location is required.';
             isValid = false;
@@ -162,18 +162,19 @@ const CarbonForm: React.FC = () => {
                     const userDoc = await getDoc(userDocRef);
                     let cumulativeEmissions = totalEmissions;
                     let submissionCount = 1;
+                    let pointsEarned=0;
 
                     if (userDoc.exists()) {
                         cumulativeEmissions += userDoc.data().cumulativeEmissions || 0;
                         submissionCount = (userDoc.data().submissionCount || 0) + 1;
 
-                        // Compare total emissions and calculate reward points
                         const lastEmissions = userDoc.data().submissions[userDoc.data().submissions.length - 1].totalEmissions;
                         if (lastEmissions > totalEmissions) {
                             const difference = lastEmissions - totalEmissions;
-                            const pointsEarned = Math.round(difference * 0.05);
+                            pointsEarned = Math.round(difference * 0.05);
                             setRewardPoints(prev => prev + pointsEarned);
                             setShowConfetti(true);
+                            setShowRewardPopup(true);
                             setRewardMessage(`🎉 Great job! You've reduced your emissions by ${difference.toFixed(2)} kg CO₂ and earned ${pointsEarned} reward points! 🎉`);
                         } else {
                             setRewardMessage('Your emissions have not reduced this time. Keep trying!');
@@ -192,174 +193,92 @@ const CarbonForm: React.FC = () => {
                     }
                     setReductionStrategy(strategy);
 
-                    // Save submission data
                     await setDoc(userDocRef, {
+                        submissions: arrayUnion({ ...payload, totalEmissions }),
                         cumulativeEmissions,
                         submissionCount,
-                        submissions: arrayUnion({
-                            ...formData,
-                            totalEmissions: totalEmissions.toFixed(2),
-                            createdAt: new Date(),
-                        }),
+                        rewardPoints: pointsEarned,
                     }, { merge: true });
-
-                    setSubmissionStatus('Form submitted successfully!');
                 } catch (error) {
-                    console.error('Error adding document to Firebase: ', error);
-                    setSubmissionStatus('Error submitting the form. Please try again later.');
+                    console.error('Error submitting data: ', error);
+                    setSubmissionStatus('Error submitting form. Please try again later.');
                 }
             }
         }
         setIsLoading(false);
     };
 
+    const closeRewardPopup = () => {
+        setShowRewardPopup(false);
+    };
+
     return (
-<div className="p-5 min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">            {showConfetti && <Confetti />}
-            <div className="flex flex-col bg-white p-8 rounded-lg shadow-lg w-full max-w-xl mr-4">
-                <h1 className="text-2xl font-bold mb-6 text-gray-800">Carbon Footprint Calculator</h1>
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Your Name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="border p-2 mb-2 w-full"
-                    />
-                    {errors.name && <p className="text-red-600">{errors.name}</p>}
-                    <input
-                        type="text"
-                        name="location"
-                        placeholder="Your Location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        className="border p-2 mb-2 w-full"
-                    />
-                    {errors.location && <p className="text-red-600">{errors.location}</p>}
-                    <input
-                        type="number"
-                        name="energyConsumption"
-                        placeholder="Energy Consumption (kWh)"
-                        value={formData.energyConsumption}
-                        onChange={handleChange}
-                        className="border p-2 mb-2 w-full"
-                    />
-                    {errors.energyConsumption && <p className="text-red-600">{errors.energyConsumption}</p>}
-                    <input
-                        type="number"
-                        name="renewableEnergyUsage"
-                        placeholder="Renewable Energy Usage (%)"
-                        value={formData.renewableEnergyUsage}
-                        onChange={handleChange}
-                        className="border p-2 mb-2 w-full"
-                    />
-                    {errors.renewableEnergyUsage && <p className="text-red-600">{errors.renewableEnergyUsage}</p>}
-                    <input
-                        type="number"
-                        name="distanceTraveledPerDay"
-                        placeholder="Distance Traveled Per Day (km)"
-                        value={formData.distanceTraveledPerDay}
-                        onChange={handleChange}
-                        className="border p-2 mb-2 w-full"
-                    />
-                    {errors.distanceTraveledPerDay && <p className="text-red-600">{errors.distanceTraveledPerDay}</p>}
+        <div className="p-5 min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+            {showConfetti && <Confetti />}
+            <div className="flex w-full max-w-5xl">
+                <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-full max-w-md mr-4">
+                    <h2 className="text-2xl font-bold mb-4">Carbon Footprint Calculator</h2>
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Your Name" className="border p-2 mb-2 w-full" />
+                    <span className="text-red-500">{errors.name}</span>
+                    <input type="text" name="location" value={formData.location} onChange={handleChange} placeholder="Your Location" className="border p-2 mb-2 w-full" />
+                    <span className="text-red-500">{errors.location}</span>
+                    <input type="number" name="energyConsumption" value={formData.energyConsumption} onChange={handleChange} placeholder="Energy Consumption (kWh)" className="border p-2 mb-2 w-full" />
+                    <span className="text-red-500">{errors.energyConsumption}</span>
+                    <input type="number" name="renewableEnergyUsage" value={formData.renewableEnergyUsage} onChange={handleChange} placeholder="Renewable Energy Usage (%)" className="border p-2 mb-2 w-full" />
+                    <span className="text-red-500">{errors.renewableEnergyUsage}</span>
+                    <input type="number" name="distanceTraveledPerDay" value={formData.distanceTraveledPerDay} onChange={handleChange} placeholder="Distance Traveled Per Day (km)" className="border p-2 mb-2 w-full" />
+                    <span className="text-red-500">{errors.distanceTraveledPerDay}</span>
                     <select name="fuelType" value={formData.fuelType} onChange={handleChange} className="border p-2 mb-2 w-full">
                         <option value="petrol">Petrol</option>
                         <option value="diesel">Diesel</option>
                         <option value="electric">Electric</option>
                         <option value="naturalGas">Natural Gas</option>
                     </select>
-                    {errors.fuelType && <p className="text-red-600">{errors.fuelType}</p>}
-                    <input
-                        type="number"
-                        name="fuelConsumption"
-                        placeholder="Fuel Consumption (L)"
-                        value={formData.fuelConsumption}
-                        onChange={handleChange}
-                        className="border p-2 mb-2 w-full"
-                    />
-                    {errors.fuelConsumption && <p className="text-red-600">{errors.fuelConsumption}</p>}
-                    <input
-                        type="number"
-                        name="totalWasteProduced"
-                        placeholder="Total Waste Produced (kg)"
-                        value={formData.totalWasteProduced}
-                        onChange={handleChange}
-                        className="border p-2 mb-2 w-full"
-                    />
-                    {errors.totalWasteProduced && <p className="text-red-600">{errors.totalWasteProduced}</p>}
-                    <input
-                        type="number"
-                        name="wasteRecycled"
-                        placeholder="Waste Recycled (kg)"
-                        value={formData.wasteRecycled}
-                        onChange={handleChange}
-                        className="border p-2 mb-2 w-full"
-                    />
-                    {errors.wasteRecycled && <p className="text-red-600">{errors.wasteRecycled}</p>}
+                    <span className="text-red-500">{errors.fuelType}</span>
+                    <input type="number" name="fuelConsumption" value={formData.fuelConsumption} onChange={handleChange} placeholder="Fuel Consumption (L)" className="border p-2 mb-2 w-full" />
+                    <span className="text-red-500">{errors.fuelConsumption}</span>
+                    <input type="number" name="totalWasteProduced" value={formData.totalWasteProduced} onChange={handleChange} placeholder="Total Waste Produced (kg)" className="border p-2 mb-2 w-full" />
+                    <span className="text-red-500">{errors.totalWasteProduced}</span>
+                    <input type="number" name="wasteRecycled" value={formData.wasteRecycled} onChange={handleChange} placeholder="Waste Recycled (kg)" className="border p-2 mb-2 w-full" />
+                    <span className="text-red-500">{errors.wasteRecycled}</span>
                     <select name="diet" value={formData.diet} onChange={handleChange} className="border p-2 mb-2 w-full">
                         <option value="omnivorous">Omnivorous</option>
                         <option value="vegetarian">Vegetarian</option>
                         <option value="vegan">Vegan</option>
                         <option value="pescatarian">Pescatarian</option>
                     </select>
-                    {errors.diet && <p className="text-red-600">{errors.diet}</p>}
-                    <select name="travelFrequency" value={formData.travelFrequency} onChange={handleChange} className="border p-2 mb-2 w-full">
-                        <option value={1}>1 day/week</option>
-                        <option value={2}>2 days/week</option>
-                        <option value={3}>3 days/week</option>
-                        <option value={4}>4 days/week</option>
-                        <option value={5}>5 days/week</option>
-                        <option value={6}>6 days/week</option>
-                        <option value={7}>7 days/week</option>
-                    </select>
-                    {errors.travelFrequency && <p className="text-red-600">{errors.travelFrequency}</p>}
-                    <button type="submit" className="bg-green-500 text-white py-2 px-4 rounded-lg w-full hover:bg-green-600">
-                        Submit
+                    <span className="text-red-500">{errors.diet}</span>
+                    <input type="number" name="travelFrequency" value={formData.travelFrequency} onChange={handleChange} placeholder="Travel Frequency (days per week)" className="border p-2 mb-2 w-full" />
+                    <span className="text-red-500">{errors.travelFrequency}</span>
+                    <button type="submit" className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+                        {isLoading ? 'Submitting...' : 'Calculate'}
                     </button>
+                    <div className="mt-4 text-green-600">{submissionStatus}</div>
                 </form>
-                {submissionStatus && <p className="mt-4 text-green-600">{submissionStatus}</p>}
-                {isLoading && <p className="mt-2 text-yellow-600">Waiting for Gemini to send data...</p>}
-            </div>
-
-            {rewardPoints > 0 && (
-                <RewardCard points={rewardPoints} />
-            )}
-
-            {reductionStrategy && !isLoading && (
-                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
-                    <h3 className="font-semibold">Suggested Carbon Reduction Strategy:</h3>
-                    <MarkdownRenderer content={reductionStrategy} />
+                <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md ml-4">
+                    {totalEmissions !== null && <div className="mt-4">Total Emissions: {totalEmissions.toFixed(2)} kg CO₂</div>}
+                    {reductionStrategy && <MarkdownRenderer content={reductionStrategy} />}
                 </div>
+            </div>
+            {showRewardPopup && (
+                <motion.div
+                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <div className="bg-white p-4 rounded-lg shadow-md flex flex-col">
+                        <h3 className="text-xl font-bold mb-2">Reward Points!</h3>
+                        <p>{rewardMessage}</p>
+                        <button onClick={closeRewardPopup} className="mt-auto bg-red-500 text-white p-2 rounded self-center">
+                            Close
+                        </button>
+                    </div>
+                </motion.div>
             )}
         </div>
     );
 };
 
-const RewardCard: React.FC<{ points: number }> = ({ points }) => {
-    return (
-        <motion.div
-            className="fixed flex flex-col items-center justify-center bg-white p-6 rounded-lg shadow-lg w-full max-w-sm mx-auto mt-4 z-50"
-            style={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            exit={{ opacity: 0 }}
-        >
-            <motion.div
-                className="w-0 h-0 border-l-24 border-l-transparent border-r-24 border-r-transparent border-b-24 border-b-green-500 mb-2"
-                animate={{
-
-                    height: [0, 40, 0],
-                    opacity: [0, 1, 0],
-                }}
-                transition={{ duration: 4, repeat: Infinity }}
-            />
-            <p className="text-lg font-bold">🎉 You've earned {points} reward points! 🎉</p>
-        </motion.div>
-    );
-};
-
-
 export default CarbonForm;
-
